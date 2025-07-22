@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Undangan Paul & Ita</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
     :root {
       --primary-color: #a64ac9;
@@ -21,9 +22,11 @@
       overflow-x: hidden;
     }
     .video-background {
-      position: fixed; top: 0; left: 0;
+      position: fixed;
+      top: 0; left: 0;
       width: 100%; height: 100%;
-      overflow: hidden; z-index: -2;
+      overflow: hidden;
+      z-index: -2;
     }
     .video-background video {
       min-width: 100%;
@@ -55,6 +58,67 @@
       font-style: italic;
       color: #eee;
     }
+
+    /* Navbar Dropdown */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      z-index: 1000;
+    }
+    .navbar .brand {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      font-family: 'Playfair Display', serif;
+    }
+    .navbar .menu {
+      display: flex;
+      gap: 20px;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .navbar a:hover {
+      color: var(--primary-color);
+    }
+    .navbar .toggle {
+      display: none;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+    .navbar .menu.mobile {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: rgba(0,0,0,0.9);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .navbar .menu.mobile a {
+      margin: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+      .navbar .menu.desktop {
+        display: none;
+      }
+      .navbar .toggle {
+        display: block;
+      }
+    }
+
     .section {
       padding: 80px 20px;
       text-align: center;
@@ -116,6 +180,26 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    .music-toggle {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      z-index: 999;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .music-toggle.hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+    }
+    #musicBtn {
+      padding: 10px;
+      border: none;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      cursor: pointer;
+    }
     button {
       padding: 10px 20px;
       background-color: var(--primary-color);
@@ -133,82 +217,63 @@
       font-size: 14px;
       color: #fff;
     }
-
-    /* Navbar */
-    nav.navbar {
-      position: fixed;
-      top: 0;
+    .mySwiper {
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      padding: 10px 0;
-      backdrop-filter: blur(6px);
+      max-width: 700px;
+      margin: auto;
+      border-radius: 12px;
+      overflow: hidden;
     }
-    nav.navbar a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: bold;
-      font-size: 16px;
-      transition: color 0.3s;
-    }
-    nav.navbar a:hover {
-      color: var(--primary-color);
-    }
-
-    /* Opening animation */
-    #opening { animation: fadeIn 1.2s ease-in-out; }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-
-    @media (max-width: 600px) {
-      header h1 { font-size: 42px; }
+    .swiper-slide img {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
-
-<!-- Pembuka Undangan -->
 <div id="opening" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: white; font-family: 'Playfair Display', serif; text-align: center;">
   <h1 style="font-family: 'Great Vibes', cursive; font-size: 48px;">Paul & Ita</h1>
   <p style="font-size: 20px;" id="pembuka-nama">Yth. Tamu Undangan</p>
-  <button onclick="bukaUndangan()" style="margin-top: 30px; font-size: 18px; padding: 12px 24px; background-color: #a64ac9; color: white; border: none; border-radius: 6px; cursor: pointer;">Buka Undangan</button>
+  <button onclick="bukaUndangan()" style="margin-top: 30px; font-size: 18px;">Buka Undangan</button>
 </div>
 
-<!-- Background Video -->
 <div class="video-background">
   <video autoplay muted loop playsinline>
-    <source src="https://videocdn.cdnpk.net/videos/b65ce8bb-6727-4ff5-8849-566ea8083333/horizontal/previews/clear/large.mp4?token=exp=1752299757~hmac=82b7cfb5ba700871f296ac2cd49ae2321495f0c5ea2746b7b04f1488cf3aee4f" type="video/mp4">
+    <source src="large.mp4" type="video/mp4">
   </video>
 </div>
 
-<!-- Musik Lokal -->
 <audio id="music" loop autoplay>
   <source src="musik.mp4" type="audio/mp4">
 </audio>
 
 <!-- Navbar -->
 <nav class="navbar">
-  <a href="#lokasi">Lokasi</a>
-  <a href="#galeri">Galeri</a>
-  <a href="#rsvp">RSVP</a>
+  <div class="brand">Paul & Ita</div>
+  <div class="menu desktop">
+    <a href="#lokasi">Lokasi</a>
+    <a href="#galeri">Galeri</a>
+    <a href="#rsvp">RSVP</a>
+  </div>
+  <div class="toggle" onclick="toggleDropdown()">☰</div>
+  <div class="menu mobile" id="mobileMenu">
+    <a href="#lokasi" onclick="toggleDropdown()">Lokasi</a>
+    <a href="#galeri" onclick="toggleDropdown()">Galeri</a>
+    <a href="#rsvp" onclick="toggleDropdown()">RSVP</a>
+  </div>
 </nav>
 
-<!-- Header -->
 <header>
   <h1>Paul & Ita</h1>
   <p>Undangan Pernikahan</p>
   <p class="nama-tamu" id="tamu"></p>
-  <div style="position: fixed; top: 20px; right: 20px; z-index: 999;">
-    <button onclick="toggleMusic()" id="musicBtn" style="padding: 10px; border: none; border-radius: 50%; background-color: #a64ac9; color: white;">🔊</button>
+  <div class="music-toggle" id="musicToggle">
+    <button onclick="toggleMusic()" id="musicBtn">🔊</button>
   </div>
 </header>
 
-<!-- Sections -->
 <section class="section">
   <h2>Dengan hormat,</h2>
   <p>kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami:</p>
@@ -230,15 +295,20 @@
 
 <section class="section maps">
   <h2>Lokasi</h2>
-  <iframe src="https://www.google.com/maps/embed?..." allowfullscreen loading="lazy"></iframe>
+  <iframe src="https://www.google.com/maps/embed?..."></iframe>
 </section>
 
 <section class="section" id="galeri">
   <h2>Galeri Kenangan</h2>
-  <div class="gallery">
-    <img src="1.jpeg" alt="Galeri 1">
-    <img src="2.jpeg" alt="Galeri 2">
-    <img src="3.jpeg" alt="Galeri 3">
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide"><img src="1.jpeg" /></div>
+      <div class="swiper-slide"><img src="2.jpeg" /></div>
+      <div class="swiper-slide"><img src="3.jpeg" /></div>
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
   </div>
 </section>
 
@@ -247,24 +317,27 @@
   <form id="rsvpForm">
     <div class="form-group"><label>Nama:</label><input type="text" name="nama" required /></div>
     <div class="form-group"><label>Jumlah Tamu:</label><input type="number" name="jumlah" min="1" max="10" required /></div>
-    <div class="form-group"><label>Apakah Anda akan hadir?</label>
+    <div class="form-group"><label>Kehadiran:</label>
       <select name="kehadiran" required>
         <option value="">--Pilih--</option>
-        <option value="ya">Ya, saya akan hadir</option>
-        <option value="tidak">Maaf, saya tidak bisa hadir</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
       </select>
     </div>
     <button type="submit">Kirim</button>
   </form>
 </section>
 
-<div class="footer">
-  ©️ 2025 Paul & Ita Wedding — Terima kasih atas doa & kehadirannya
-</div>
+<div class="footer">©️ 2025 Paul & Ita Wedding — Terima kasih atas doa & kehadirannya</div>
 
-<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Nama tamu dari URL
+  // Toggle Dropdown
+  function toggleDropdown() {
+    const menu = document.getElementById("mobileMenu");
+    menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+  }
+
   const params = new URLSearchParams(window.location.search);
   const namaTamu = params.get("to");
   const max = params.get("max");
@@ -274,31 +347,24 @@
   }
   if (max) document.querySelector('input[name="jumlah"]').setAttribute("max", max);
 
-  // Musik toggle
   const music = document.getElementById("music");
   let isPlaying = true;
   const musicBtn = document.getElementById("musicBtn");
   function toggleMusic() {
     if (isPlaying) {
-      music.pause();
-      musicBtn.textContent = "🔈";
+      music.pause(); musicBtn.textContent = "🔈";
     } else {
-      music.play();
-      musicBtn.textContent = "🔊";
+      music.play(); musicBtn.textContent = "🔊";
     }
     isPlaying = !isPlaying;
   }
 
-  // Countdown
   const targetDate = new Date("2025-07-20T10:00:00").getTime();
   const countdownEl = document.getElementById("countdown");
   function updateCountdown() {
     const now = new Date().getTime();
     const distance = targetDate - now;
-    if (distance < 0) {
-      countdownEl.innerText = "Acara sedang berlangsung!";
-      return;
-    }
+    if (distance < 0) return countdownEl.innerText = "Acara sedang berlangsung!";
     const d = Math.floor(distance / (1000 * 60 * 60 * 24));
     const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -308,7 +374,6 @@
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // Buka undangan
   function bukaUndangan() {
     const opening = document.getElementById("opening");
     opening.style.opacity = "0";
@@ -320,7 +385,6 @@
   }
   document.body.style.overflow = "hidden";
 
-  // Fade-in observer
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -331,7 +395,6 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.section').forEach(section => observer.observe(section));
 
-  // Form RSVP
   document.getElementById("rsvpForm").addEventListener("submit", function(e) {
     e.preventDefault();
     const form = e.target;
@@ -340,21 +403,36 @@
       jumlah: form.jumlah.value,
       kehadiran: form.kehadiran.value
     };
-    fetch("https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec", {
+    fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {"Content-Type": "application/json"}
     }).then(res => res.json())
-      .then(res => {
-        if (res.status === "sukses") {
-          alert("Terima kasih! Kehadiran Anda telah dicatat.");
-          form.reset();
-        } else {
-          alert("Gagal mengirim data. Silakan coba lagi.");
-        }
-      }).catch(() => alert("Terjadi kesalahan jaringan."));
+    .then(res => {
+      alert(res.status === "sukses" ? "Terima kasih! Kehadiran Anda telah dicatat." : "Gagal mengirim data.");
+      if (res.status === "sukses") form.reset();
+    }).catch(() => alert("Terjadi kesalahan jaringan."));
+  });
+
+  const swiper = new Swiper(".mySwiper", {
+    loop: true,
+    autoplay: { delay: 4000, disableOnInteraction: false },
+    effect: "fade",
+    pagination: { el: ".swiper-pagination", clickable: true },
+    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+  });
+
+  let lastScrollTop = 0;
+  const musicToggle = document.getElementById("musicToggle");
+  window.addEventListener("scroll", function () {
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    if (currentScroll > lastScrollTop) {
+      musicToggle.classList.add("hidden");
+    } else {
+      musicToggle.classList.remove("hidden");
+    }
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
   });
 </script>
-
 </body>
 </html>
